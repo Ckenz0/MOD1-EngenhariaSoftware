@@ -18,6 +18,8 @@ keys/
 *.db
 deploy/azure/parameters.local*.json
 /.local/
-/.superpowers/
+# Artefatos locais do Superpowers (inclui docs/superpowers/)
+.superpowers/
+superpowers/
 /.worktrees/
 /Projeto de Engenharia de Software com Microsserviços 2026-2.pdf
