@@ -21,5 +21,8 @@ deploy/azure/parameters.local*.json
 # Artefatos locais do Superpowers (inclui docs/superpowers/)
 .superpowers/
 superpowers/
+# Instruções locais de agentes
+AGENTS.md
+agents.md
 /.worktrees/
 /Projeto de Engenharia de Software com Microsserviços 2026-2.pdf
