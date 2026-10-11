@@ -1,4 +1,4 @@
-# Módulo 1 — Autenticação
+# Autenticação
 
 API Python/FastAPI para contas individuais, login JWT RS256 e validação por chave pública. Candidato `0.1.0`. O MVP executa localmente com banco hospedado no Neon PostgreSQL. Docker oferece PostgreSQL local; Azure Container Apps é uma opção de publicação ainda não executada.
 
