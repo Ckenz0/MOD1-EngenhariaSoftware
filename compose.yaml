@@ -1,0 +1,62 @@
+name: mod1-auth
+
+x-auth: &auth
+  image: mod1-auth:0.1.0
+  build: .
+  environment: &auth-env
+    DATABASE_URL: postgresql+psycopg://auth_service:${POSTGRES_PASSWORD:?Configure POSTGRES_PASSWORD no .env}@db:5432/auth
+    DATABASE_SCHEMA: mod1_identity
+    JWT_PRIVATE_KEY_PATH: /app/keys/auth-private.pem
+    JWT_ISSUER: ${JWT_ISSUER:-mod1-auth-local}
+    JWT_AUDIENCE: ${JWT_AUDIENCE:-engenharia-software-api}
+    ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+    CORS_ORIGINS: ${CORS_ORIGINS:-[]}
+  depends_on:
+    db:
+      condition: service_healthy
+
+services:
+  db:
+    image: postgres:17.9-bookworm@sha256:47f917f7409eacd22fc5dfb1dee634e1b55cf0c01d1a7eb701be2227a03e0641
+    environment:
+      POSTGRES_DB: auth
+      POSTGRES_USER: auth_service
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configure POSTGRES_PASSWORD no .env}
+    ports:
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U auth_service -d auth']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    <<: *auth
+    ports:
+      - '127.0.0.1:8000:8000'
+    volumes:
+      - auth_keys:/app/keys:ro
+    healthcheck:
+      test: ['CMD', 'python', '-c', 'import urllib.request; urllib.request.urlopen("http://127.0.0.1:8000/health/ready", timeout=3)']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  admin:
+    <<: *auth
+    profiles: ['admin']
+    entrypoint: ['mod1-auth']
+    command: ['init']
+    stdin_open: true
+    tty: true
+    volumes:
+      - auth_keys:/app/keys
+
+volumes:
+  auth_db_data:
+  auth_keys:

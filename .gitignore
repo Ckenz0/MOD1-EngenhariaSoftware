@@ -1,1 +1,25 @@
 
+
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+.env
+.env.*
+!.env.example
+data/
+keys/
+*.pem
+*.sqlite*
+*.db
+deploy/azure/parameters.local*.json
+/.local/
+# Artefatos locais do Superpowers (inclui docs/superpowers/)
+.superpowers/
+superpowers/
+/.worktrees/
+/Projeto de Engenharia de Software com Microsserviços 2026-2.pdf

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appName": {"value": "mod1-auth"},
+    "environmentId": {"value": "/subscriptions/SUBSCRIPTION/resourceGroups/RESOURCE_GROUP/providers/Microsoft.App/managedEnvironments/ENVIRONMENT"},
+    "imageReference": {"value": "REGISTRY.azurecr.io/mod1-auth@sha256:IMAGE_DIGEST"},
+    "registryServer": {"value": "REGISTRY.azurecr.io"},
+    "identityResourceId": {"value": "/subscriptions/SUBSCRIPTION/resourceGroups/RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/IDENTITY"},
+    "jwtKeySecretVersionUri": {"value": "https://VAULT.vault.azure.net/secrets/auth-private-key/VERSION"},
+    "databaseSecretUri": {"value": "https://VAULT.vault.azure.net/secrets/database-url/VERSION"},
+    "databaseCaSecretUri": {"value": "https://VAULT.vault.azure.net/secrets/database-ca/VERSION"},
+    "jwtIssuer": {"value": "https://YOUR_AUTH_HOST"},
+    "databaseSchema": {"value": "mod1_identity"},
+    "corsOrigins": {"value": "[]"}
+  }
+}
