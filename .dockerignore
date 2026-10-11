@@ -1,0 +1,7 @@
+*
+!pyproject.toml
+!uv.lock
+!src/
+!src/mod1_auth/
+!src/mod1_auth/*.py
+!Dockerfile
