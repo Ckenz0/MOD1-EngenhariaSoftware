@@ -33,6 +33,8 @@ O usuário pode criar a própria conta no frontend e entrar imediatamente. A rot
 
 ## Iniciar com Docker
 
+Para a publicação integrada das três APIs e do frontend na Azure, mantendo o Neon, siga o [passo a passo de configuração e deploy](docs/deploy-azure.md). Os workflows cloud são manuais; compilar os templates não comprova publicação.
+
 Requisitos: Docker com daemon/Compose disponíveis. Copie `.env.example` para `.env` e substitua `CHANGE_ME`. Para o PostgreSQL local, use senha aleatória com pelo menos 32 caracteres URL-safe (`A-Z`, `a-z`, `0-9`, `_`, `-`), porque o Compose a insere no DSN. Para senhas arbitrárias, codifique a senha para URI. Preserve o `.env` do Neon antes de preparar uma configuração alternativa local.
 
 ```console
