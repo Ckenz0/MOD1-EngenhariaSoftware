@@ -1,0 +1,79 @@
+name: Azure infrastructure
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        type: choice
+        description: 'Shared bootstrap or APIs (after images and secrets exist)'
+        options: [bootstrap, apps]
+        default: bootstrap
+      apply:
+        type: boolean
+        description: 'Apply the reviewed deployment; false runs what-if only'
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: azure-demo-infrastructure
+  cancel-in-progress: false
+jobs:
+  infrastructure:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: demo-infrastructure
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      PHASE: ${{ inputs.phase }}
+      BOOTSTRAP_PARAMETERS_JSON: ${{ vars.AZURE_BOOTSTRAP_PARAMETERS_JSON }}
+      APP_REFERENCES_JSON: ${{ vars.AZURE_APP_REFERENCES_JSON }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Prepare parameter files
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$AZURE_RESOURCE_GROUP" =~ ^[A-Za-z0-9._-]{1,90}$ ]]
+          mkdir -p .local
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          phase = os.environ["PHASE"]
+          assert phase in {"bootstrap", "apps"}, "Invalid phase"
+          value = os.environ["BOOTSTRAP_PARAMETERS_JSON" if phase == "bootstrap" else "APP_REFERENCES_JSON"]
+          try:
+              data = json.loads(value)
+              assert isinstance(data, dict)
+          except (ValueError, AssertionError):
+              raise SystemExit("Configure the selected phase's JSON references in GitHub Environment variables") from None
+          Path(".local/input.json").write_text(json.dumps(data), encoding="utf-8")
+          PY
+          if [[ "$PHASE" == "apps" ]]; then
+            python scripts/azure_config.py .local/input.json .local/parameters.json
+            echo 'TEMPLATE=deploy/azure/apps.bicep' >> "$GITHUB_ENV"
+          else
+            cp .local/input.json .local/parameters.json
+            echo 'TEMPLATE=deploy/azure/main.bicep' >> "$GITHUB_ENV"
+          fi
+      - uses: azure/login@8216e11d8cd9b42fe925c852af8e76311ff067ac # v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Compile and preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          az bicep build --file "$TEMPLATE" --outfile .local/template.json
+          az deployment group what-if --resource-group "$AZURE_RESOURCE_GROUP" --template-file "$TEMPLATE" --parameters @.local/parameters.json
+      - name: Apply infrastructure
+        if: inputs.apply
+        shell: bash
+        run: |
+          set -euo pipefail
+          az deployment group create --name "mod1-$PHASE-$GITHUB_RUN_ID" --resource-group "$AZURE_RESOURCE_GROUP" --template-file "$TEMPLATE" --parameters @.local/parameters.json --query properties.outputs --output json

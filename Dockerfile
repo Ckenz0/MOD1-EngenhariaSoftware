@@ -10,10 +10,11 @@ RUN uv sync --locked --no-dev --no-editable
 
 FROM python:3.12.15-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258 AS runtime
 ENV PATH="/app/.venv/bin:$PATH" PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
-RUN groupadd --gid 10001 auth && useradd --uid 10001 --gid auth --no-create-home auth \
+RUN test -s /etc/ssl/certs/ca-certificates.crt \
+    && groupadd --gid 10001 auth && useradd --uid 10001 --gid auth --no-create-home auth \
     && mkdir -p /app/keys && chown auth:auth /app/keys
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 USER 10001:10001
 EXPOSE 8000
-CMD ["uvicorn", "mod1_auth.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "mod1_auth.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]

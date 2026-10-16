@@ -1,0 +1,14 @@
+{
+  "resourcePrefix": "mod1-demo",
+  "environmentName": "mod1-demo-env",
+  "registryName": "acrdemo123",
+  "vaultName": "kv-demo123",
+  "frontendOrigin": "https://demo.azurestaticapps.net",
+  "authImage": "acrdemo123.azurecr.io/identity@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "projectsImage": "acrdemo123.azurecr.io/projects@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "backlogImage": "acrdemo123.azurecr.io/backlog@sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "authDatabaseSecretUri": "https://kv-demo123.vault.azure.net/secrets/identity-database-url/11111111111111111111111111111111",
+  "projectsDatabaseSecretUri": "https://kv-demo123.vault.azure.net/secrets/projects-database-url/22222222222222222222222222222222",
+  "backlogDatabaseSecretUri": "https://kv-demo123.vault.azure.net/secrets/backlog-database-url/33333333333333333333333333333333",
+  "jwtKeySecretUri": "https://kv-demo123.vault.azure.net/secrets/identity-jwt-private-key/44444444444444444444444444444444"
+}

@@ -17,6 +17,7 @@ keys/
 *.sqlite*
 *.db
 deploy/azure/parameters.local*.json
+deploy/azure/*.local*.json
 /.local/
 # Artefatos locais do Superpowers (inclui docs/superpowers/)
 .superpowers/
